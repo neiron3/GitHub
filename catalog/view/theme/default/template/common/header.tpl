@@ -56,6 +56,9 @@ $('body').prepend('<iframe src="<?php echo $store; ?>" style="display: none;"></
 //--></script>
 <?php } ?>
 <?php echo $google_analytics; ?>
+
+<link rel="stylesheet" href="/js/fancybox/source/jquery.fancybox.css" type="text/css" media="screen" />
+
 </head>
 <body>
 <div id="container">

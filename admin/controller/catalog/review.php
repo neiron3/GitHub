@@ -180,12 +180,27 @@ class ControllerCatalogReview extends Controller {
 				'text' => $this->language->get('text_edit'),
 				'href' => $this->url->link('catalog/review/update', 'token=' . $this->session->data['token'] . '&review_id=' . $result['review_id'] . $url, 'SSL')
 			);
-						
+
+			//Расшифровка типа отзыва
+			$type='Текст';
+			switch ($result['type_id']) {
+				case 1:
+				 $type='Картинка';
+				break;
+				case 2:
+					$type='Видео';
+					break;
+				default:
+					$type='Текст';
+				break;
+			}
+			
 			$this->data['reviews'][] = array(
 				'review_id'  => $result['review_id'],
 				'name'       => $result['name'],
 				'author'     => $result['author'],
 				'rating'     => $result['rating'],
+				'type_id'	 => $type,
 				'status'     => ($result['status'] ? $this->language->get('text_enabled') : $this->language->get('text_disabled')),
 				'date_added' => date($this->language->get('date_format_short'), strtotime($result['date_added'])),
 				'selected'   => isset($this->request->post['selected']) && in_array($result['review_id'], $this->request->post['selected']),
@@ -199,6 +214,7 @@ class ControllerCatalogReview extends Controller {
 
 		$this->data['column_product'] = $this->language->get('column_product');
 		$this->data['column_author'] = $this->language->get('column_author');
+		$this->data['column_type_id'] = 'Тип';
 		$this->data['column_rating'] = $this->language->get('column_rating');
 		$this->data['column_status'] = $this->language->get('column_status');
 		$this->data['column_date_added'] = $this->language->get('column_date_added');
@@ -236,6 +252,7 @@ class ControllerCatalogReview extends Controller {
 		$this->data['sort_product'] = $this->url->link('catalog/review', 'token=' . $this->session->data['token'] . '&sort=pd.name' . $url, 'SSL');
 		$this->data['sort_author'] = $this->url->link('catalog/review', 'token=' . $this->session->data['token'] . '&sort=r.author' . $url, 'SSL');
 		$this->data['sort_rating'] = $this->url->link('catalog/review', 'token=' . $this->session->data['token'] . '&sort=r.rating' . $url, 'SSL');
+		$this->data['sort_type_id'] = $this->url->link('catalog/review', 'token=' . $this->session->data['token'] . '&sort=r.type_id' . $url, 'SSL');
 		$this->data['sort_status'] = $this->url->link('catalog/review', 'token=' . $this->session->data['token'] . '&sort=r.status' . $url, 'SSL');
 		$this->data['sort_date_added'] = $this->url->link('catalog/review', 'token=' . $this->session->data['token'] . '&sort=r.date_added' . $url, 'SSL');
 		
@@ -363,6 +380,7 @@ class ControllerCatalogReview extends Controller {
 			
 		$this->load->model('catalog/product');
 		
+		
 		if (isset($this->request->post['product_id'])) {
 			$this->data['product_id'] = $this->request->post['product_id'];
 		} elseif (!empty($review_info)) {
@@ -410,6 +428,16 @@ class ControllerCatalogReview extends Controller {
 		} else {
 			$this->data['status'] = '';
 		}
+		
+		//Тип сообщения (Просто по умолчанию 0)
+		/*if (isset($this->request->post['type_id'])) {
+			$this->data['type_id'] = $this->request->post['type_id'];
+		} elseif (!empty($review_info)) {
+			$this->data['type_id'] = $review_info['type_id'];
+		} else {*/
+			$this->data['type_id'] = $review_info['type_id'];
+		//}
+		  
 
 		$this->template = 'catalog/review_form.tpl';
 		$this->children = array(

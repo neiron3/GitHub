@@ -264,13 +264,14 @@
   <?php if ($review_status) { ?>
   <div id="tab-review" class="tab-content">
     <div id="review"></div>
+    <div style="display: none;">
     <h2 id="review-title"><?php echo $text_write; ?></h2>
     <b><?php echo $entry_name; ?></b><br />
     <input type="text" name="name" value="" />
     <br />
     <br />
     <b><?php echo $entry_review; ?></b>
-    <textarea name="text" cols="40" rows="8" style="width: 98%;"></textarea>
+    <textarea name="text" cols="40" rows="8" style="width: 98%;" id="text"></textarea>
     <span style="font-size: 11px;"><?php echo $text_note; ?></span><br />
     <br />
     <b><?php echo $entry_rating; ?></b> <span><?php echo $entry_bad; ?></span>&nbsp;
@@ -290,8 +291,11 @@
     <br />
     <img src="index.php?route=product/product/captcha" alt="" id="captcha" /><br />
     <br />
+    Рейтинг: <input type="text" name="rating_id" value="" /><br/>
+    Тип отзыва: <input type="text" name="type_id" value="" id="type_id"/><br/>
     <div class="buttons">
       <div class="right"><a id="button-review" class="button"><?php echo $button_continue; ?></a></div>
+    </div>
     </div>
   </div>
   <?php } ?>
@@ -419,19 +423,35 @@ $('#review .pagination a').live('click', function() {
 	
 	return false;
 });			
-
+ 
 $('#review').load('index.php?route=product/product/review&product_id=<?php echo $product_id; ?>');
 
 $('#button-review').bind('click', function() {
+
+	//Запоминаем тип комменатрия
+	var type_id=$('input[name=\'type_id\']').val();
+	var type='text';
+	switch (type_id) {
+	  case '1':
+	    type='image';
+	    break
+	  case '2':
+		 type='video';
+	     break
+	  default:
+		  type='text';
+	}
+		
 	$.ajax({
 		url: 'index.php?route=product/product/write&product_id=<?php echo $product_id; ?>',
 		type: 'post',
 		dataType: 'json',
-		data: 'name=' + encodeURIComponent($('input[name=\'name\']').val()) + '&text=' + encodeURIComponent($('textarea[name=\'text\']').val()) + '&rating=' + encodeURIComponent($('input[name=\'rating\']:checked').val() ? $('input[name=\'rating\']:checked').val() : '') + '&captcha=' + encodeURIComponent($('input[name=\'captcha\']').val()),
+		data: 'name=' + encodeURIComponent($('input[name=\'name\']').val()) + '&text=' + encodeURIComponent($('textarea[name=\'text\']').val()) + '&rating=' + encodeURIComponent($('input[name=\'rating_id\']').val() ? $('input[name=\'rating\']:checked').val() : '') + '&captcha=' + encodeURIComponent($('input[name=\'captcha\']').val())+ '&type_id=' + encodeURIComponent($('input[name=\'type_id\']').val()),
 		beforeSend: function() {
 			$('.success, .warning').remove();
 			$('#button-review').attr('disabled', true);
 			$('#review-title').after('<div class="attention"><img src="catalog/view/theme/default/image/loading.gif" alt="" /> <?php echo $text_wait; ?></div>');
+			$('#review-title-'+type).after('<div class="attention"><img src="catalog/view/theme/default/image/loading.gif" alt="" /> <?php echo $text_wait; ?></div>');
 		},
 		complete: function() {
 			$('#button-review').attr('disabled', false);
@@ -440,15 +460,33 @@ $('#button-review').bind('click', function() {
 		success: function(data) {
 			if (data['error']) {
 				$('#review-title').after('<div class="warning">' + data['error'] + '</div>');
+				$('#review-title-'+type).after('<div class="warning">' + data['error'] + '</div>');
 			}
 			
 			if (data['success']) {
-				$('#review-title').after('<div class="success">' + data['success'] + '</div>');
-								
+				$('#review-title').after('<div class="success">' + data['success'] + '</div>');								
 				$('input[name=\'name\']').val('');
 				$('textarea[name=\'text\']').val('');
 				$('input[name=\'rating\']:checked').attr('checked', '');
 				$('input[name=\'captcha\']').val('');
+
+				//Все очищаем
+				$('#review_'+type+'_form_name').val('');
+				$('#review_'+type+'_form_captcha').val('');
+				$('input[name=\'rating\']:checked').prop('checked', false);
+				$('#review-title-'+type).after('<div class="success">' + data['success'] + '</div>');
+
+				//Очищаем в зависимости от типа
+				switch (type_id) {
+				  case '1':
+					$('#uploadImage').val('');
+				    break
+				  case '2':
+					 $('#review_video_form_text').val('');
+				     break
+				  default:
+					  $('.cke_contents iframe').contents().find('body').html('');
+				}
 			}
 		}
 	});
@@ -472,4 +510,21 @@ $(document).ready(function() {
 	$('.time').timepicker({timeFormat: 'h:m'});
 });
 //--></script> 
+
+<!--Подключаем визуальный редактор-->
+<script type="text/javascript" src="/admin/view/javascript/ckeditor/ckeditor.js"></script> 
+<script type="text/javascript">
+/*
+CKEDITOR.replace('text', {
+	filebrowserBrowseUrl: 'index.php?route=common/filemanager',
+	filebrowserImageBrowseUrl: 'index.php?route=common/filemanager',
+	filebrowserFlashBrowseUrl: 'index.php?route=common/filemanager',
+	filebrowserUploadUrl: 'index.php?route=common/filemanager',
+	filebrowserImageUploadUrl: 'index.php?route=common/filemanager',
+	filebrowserFlashUploadUrl: 'index.php?route=common/filemanager'
+});
+*/
+</script>
+<!-- /Подключаем визуальный редактор -->
+
 <?php echo $footer; ?>

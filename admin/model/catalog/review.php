@@ -1,7 +1,12 @@
 <?php
 class ModelCatalogReview extends Model {
 	public function addReview($data) {
-		$this->db->query("INSERT INTO " . DB_PREFIX . "review SET author = '" . $this->db->escape($data['author']) . "', product_id = '" . $this->db->escape($data['product_id']) . "', text = '" . $this->db->escape(strip_tags($data['text'])) . "', rating = '" . (int)$data['rating'] . "', status = '" . (int)$data['status'] . "', date_added = NOW()");
+		//По умолчанию 0
+		if (!isset($data['type_id'])){
+			$data['type_id']=0;
+		}
+		
+		$this->db->query("INSERT INTO " . DB_PREFIX . "review SET author = '" . $this->db->escape($data['author']) . "', product_id = '" . $this->db->escape($data['product_id']) . "', text = '" . $this->db->escape(strip_tags($data['text'])) . "', rating = '" . (int)$data['rating'] . "', status = '" . (int)$data['status'] . "',type_id='".(int)$data['type_id']."', date_added = NOW()");
 	
 		$this->cache->delete('product');
 	}
@@ -25,12 +30,13 @@ class ModelCatalogReview extends Model {
 	}
 
 	public function getReviews($data = array()) {
-		$sql = "SELECT r.review_id, pd.name, r.author, r.rating, r.status, r.date_added FROM " . DB_PREFIX . "review r LEFT JOIN " . DB_PREFIX . "product_description pd ON (r.product_id = pd.product_id) WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "'";																																					  
+		$sql = "SELECT r.review_id, pd.name, r.author, r.rating, r.status, r.date_added,r.type_id FROM " . DB_PREFIX . "review r LEFT JOIN " . DB_PREFIX . "product_description pd ON (r.product_id = pd.product_id) WHERE pd.language_id = '" . (int)$this->config->get('config_language_id') . "'";																																					  
 		
 		$sort_data = array(
 			'pd.name',
 			'r.author',
 			'r.rating',
+			'r.type_id',	
 			'r.status',
 			'r.date_added'
 		);	
