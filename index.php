@@ -242,9 +242,4 @@ $controller->dispatch($action, new Action('error/not_found'));
 
 // Output
 $response->output();
-
-//Фиксируем посещения
-$message=$_SERVER["REMOTE_ADDR"]."\r\n".$_SERVER['REQUEST_URI'];
-mail('sdwebsrv@gmail.com', 'ocstore.obedkin.ru', $message);
 ?>
-

@@ -32,13 +32,6 @@
                 <?php } else { ?>
                 <a href="<?php echo $sort_author; ?>"><?php echo $column_author; ?></a>
                 <?php } ?></td>
-                
-               <td class="left"><?php if ($sort == 'r.type_id') { ?>
-                <a href="<?php echo $sort_type_id; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_type_id; ?></a>
-                <?php } else { ?>
-                <a href="<?php echo $sort_type_id; ?>"><?php echo $column_type_id; ?></a>
-                <?php } ?></td>
-                  
               <td class="right"><?php if ($sort == 'r.rating') { ?>
                 <a href="<?php echo $sort_rating; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_rating; ?></a>
                 <?php } else { ?>
@@ -68,7 +61,6 @@
                 <?php } ?></td>
               <td class="left"><?php echo $review['name']; ?></td>
               <td class="left"><?php echo $review['author']; ?></td>
-              <td class="left"><?php echo $review['type_id']; ?></td>
               <td class="right"><?php echo $review['rating']; ?></td>
               <td class="left"><?php echo $review['status']; ?></td>
               <td class="left"><?php echo $review['date_added']; ?></td>

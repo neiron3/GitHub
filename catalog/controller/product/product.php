@@ -583,15 +583,13 @@ class ControllerProductProduct extends Controller {
 		
 		$review_total = $this->model_catalog_review->getTotalReviewsByProductId($this->request->get['product_id']);
 			
-		//$results = $this->model_catalog_review->getReviewsByProductId($this->request->get['product_id'], ($page - 1) * 5, 5);
-		$results = $this->model_catalog_review->getReviewsByProductId($this->request->get['product_id'], ($page - 1) * 5, 5000);
-		
+		$results = $this->model_catalog_review->getReviewsByProductId($this->request->get['product_id'], ($page - 1) * 5, 5);
+      		
 		foreach ($results as $result) {
         	$this->data['reviews'][] = array(
         		'author'     => $result['author'],
 				'text'       => $result['text'],
 				'rating'     => (int)$result['rating'],
-        		'type_id'	=>(int)$result['type_id'],
         		'reviews'    => sprintf($this->language->get('text_reviews'), (int)$review_total),
         		'date_added' => date($this->language->get('date_format_short'), strtotime($result['date_added']))
         	);
@@ -600,7 +598,7 @@ class ControllerProductProduct extends Controller {
 		$pagination = new Pagination();
 		$pagination->total = $review_total;
 		$pagination->page = $page;
-		$pagination->limit = 1000;//(По умолчанию было 5) 
+		$pagination->limit = 5; 
 		$pagination->text = $this->language->get('text_pagination');
 		$pagination->url = $this->url->link('product/product/review', 'product_id=' . $this->request->get['product_id'] . '&page={page}');
 			
@@ -640,12 +638,12 @@ class ControllerProductProduct extends Controller {
 			}
 				
 			if (!isset($json['error'])) {
-				//$this->request->post['type_id']=2;
 				$this->model_catalog_review->addReview($this->request->get['product_id'], $this->request->post);
 				
 				$json['success'] = $this->language->get('text_success');
 			}
-		} 
+		}
+		
 		$this->response->setOutput(json_encode($json));
 	}
 	

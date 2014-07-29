@@ -749,11 +749,8 @@
 </div>
 <script type="text/javascript" src="view/javascript/ckeditor/ckeditor.js"></script> 
 <script type="text/javascript"><!--
-<?php 
-
-foreach ($languages as $language) { ?>
+<?php foreach ($languages as $language) { ?>
 CKEDITOR.replace('description<?php echo $language['language_id']; ?>', {
-	toolbar : 'Full',
 	filebrowserBrowseUrl: 'index.php?route=common/filemanager&token=<?php echo $token; ?>',
 	filebrowserImageBrowseUrl: 'index.php?route=common/filemanager&token=<?php echo $token; ?>',
 	filebrowserFlashBrowseUrl: 'index.php?route=common/filemanager&token=<?php echo $token; ?>',
@@ -761,8 +758,7 @@ CKEDITOR.replace('description<?php echo $language['language_id']; ?>', {
 	filebrowserImageUploadUrl: 'index.php?route=common/filemanager&token=<?php echo $token; ?>',
 	filebrowserFlashUploadUrl: 'index.php?route=common/filemanager&token=<?php echo $token; ?>'
 });
-<?php }
- ?>
+<?php } ?>
 //--></script> 
 <script type="text/javascript"><!--
 $.widget('custom.catcomplete', $.ui.autocomplete, {

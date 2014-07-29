@@ -50,7 +50,6 @@ $(document).ready(function(){
     });
 });
 </script>
-<link rel="stylesheet" href="/js/fancybox/source/jquery.fancybox.css" type="text/css" media="screen" />
 </head>
 <body>
 <div id="container">

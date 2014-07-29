@@ -11,7 +11,7 @@
   <div class="box">
     <div class="heading">
       <h1><img src="view/image/review.png" alt="" /> <?php echo $heading_title; ?></h1>
-      <div class="buttons"><a  class="button" id="review_save_form"><?php echo $button_save; ?></a><a href="<?php echo $cancel; ?>" class="button"><?php echo $button_cancel; ?></a></div>
+      <div class="buttons"><a onclick="$('#form').submit();" class="button"><?php echo $button_save; ?></a><a href="<?php echo $cancel; ?>" class="button"><?php echo $button_cancel; ?></a></div>
     </div>
     <div class="content">
       <form action="<?php echo $action; ?>" method="post" enctype="multipart/form-data" id="form">
@@ -32,51 +32,8 @@
               <?php } ?></td>
           </tr>
           <tr>
-            <td><span class="required">*</span> 
-            <?php 
-            switch ($type_id) {
-            	case 1:
-            		echo 'Картинка';
-            		break;
-            	case 2:
-            		//Видео
-            		echo 'Видео';
-            		break;
-            	default:
-            		echo 'Текст';
-            		break;
-            }
-            ?>
-            </td>
-            <td>
-            
-            <input type="hidden" value="<?=$type_id;?>" id="type_id"/>
-            <?php 
-            switch ($type_id) {
-				case 0:
-					//Текст
-					echo '<textarea name="text_text" cols="60" rows="8" id="input_text">'.$text.'</textarea>';
-					break;
-            	case 1:
-            		//Картинка
-            		echo '<a class="fancybox" rel="group" href="'.$text.'"><img src="'.$text.'" width="300"></a><br>';
-            		echo '<input type="text" id="input_image" value="'.$text.'"/>';
-            		break;
-            	case 2:
-            		//Видео
-            		parse_str( parse_url( $text, PHP_URL_QUERY ), $url );
-            		echo '<iframe width="560" height="315" src="//www.youtube.com/embed/'.$url['v'].'" frameborder="0" allowfullscreen></iframe><br>';
-            		echo '<input type="text" id="input_video" value="'.$text.'"/>';
-            		break;
-            	default: 
-            		echo 'Что-то пошло не так';
-            		break;
-            } 
-            
-            ?>
-            <br>
-            <span class="error" id="text_error"></span>
-            <textarea name="text" cols="60" rows="8" id="text" style="display: none;"><?php echo $text; ?></textarea>
+            <td><span class="required">*</span> <?php echo $entry_text; ?></td>
+            <td><textarea name="text" cols="60" rows="8"><?php echo $text; ?></textarea>
               <?php if ($error_text) { ?>
               <span class="error"><?php echo $error_text; ?></span>
               <?php } ?></td>
@@ -130,17 +87,8 @@
                 <?php } ?>
               </select></td>
           </tr>
-          
         </table>
       </form>
-      <?php 
-      if ($type_id==1){
-      	echo '<form enctype="multipart/form-data" action="/uploads/upload.php" method="POST" id="mainForm">
-            		<input id="uploadImage" type="file" accept="image/*" name="image"/>
-            		</form>';
-      }
-      ?>
-      
     </div>
   </div>
 </div>
@@ -172,84 +120,4 @@ $('input[name=\'product\']').autocomplete({
    	}
 });
 //--></script> 
-
-<script type="text/javascript" src="/js/fancybox/source/jquery.fancybox.pack.js"></script>
-<script type="text/javascript" src="/admin/view/javascript/ckeditor/ckeditor.js"></script> 
-
-<script>
-$(document).ready(function() {
-	$(".fancybox").fancybox();
-
-	//Визуальный редактор
-	CKEDITOR.replace('input_text', {
-		filebrowserBrowseUrl: 'index.php?route=common/filemanager',
-		filebrowserImageBrowseUrl: 'index.php?route=common/filemanager',
-		filebrowserFlashBrowseUrl: 'index.php?route=common/filemanager',
-		filebrowserUploadUrl: 'index.php?route=common/filemanager',
-		filebrowserImageUploadUrl: 'index.php?route=common/filemanager',
-		filebrowserFlashUploadUrl: 'index.php?route=common/filemanager'
-	});
-		
-});
-
-</script>
-
-<script>
-//Кнопка сохранить отзыв
-$('#review_save_form').click(function(){
-	var type_id=$('#type_id').val();
-	
-	switch (type_id) {
-		case '0':
-			$('#text').val($('.cke_contents iframe').contents().find('body').html());
-			$('#form').submit();
-			break;
-		case '1':
-			//Картинка
-			if ($('#uploadImage').val()!=''){
-				var data = new FormData($('#mainForm')[0]);
-			    $.ajax({
-			      type: "POST",
-			      url: "/uploads/upload.php",
-			      data: data,
-			      contentType: false,
-			      processData: false,
-			      beforeSend: function() {
-						//TODO сделать загрузчик
-				      $('#loader').show();
-			      }
-			    }).done(function (result) {
-			        result=result.split('|');
-			        if (result[0]==0){
-			        	$('#text').val(result[1]);
-			        	$('#form').submit();
-					}else{
-						$('#text_error').html(result[1]);
-					}
-				});
-			}else{
-				$('#form').submit();
-			}
-			
-	    break
-	  case '2':
-			//Видео
-			var url=$('#input_video').val();
-			var p = /^(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?(?=.*v=((\w|-){11}))(?:\S+)?$/;
-		    var result=(url.match(p)) ? RegExp.$1 : false;
-		    if (result){
-				$('#text').val(url);
-				$('#form').submit();
-		    }else{
-		    	$('#text_error').html('Некоректная ссылка на YouTubе-ролик');
-		    }  
-	    break
-	  default:
-	    alert('Я таких значений не знаю')
-	}
-		
-	
-})
-</script>
-
 <?php echo $footer; ?>
